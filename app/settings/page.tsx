@@ -16,6 +16,7 @@ export default function SettingsPage() {
   const [keys, setKeys] = useState<ApiKey[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [autoImporting, setAutoImporting] = useState(false);
   const [formData, setFormData] = useState({
     platform: 'openai',
     apiKey: '',
@@ -107,6 +108,29 @@ export default function SettingsPage() {
     }
   };
 
+  const handleAutoImport = async () => {
+    if (!confirm('환경 변수에서 API 키를 자동으로 가져오시겠습니까?')) return;
+
+    setAutoImporting(true);
+    try {
+      const response = await fetch('/api/auto-import');
+      const data = await response.json();
+
+      if (data.success) {
+        const successCount = data.data.filter((r: any) => r.success).length;
+        alert(`${successCount}개의 API 키가 성공적으로 연결되었습니다.`);
+        fetchKeys();
+      } else {
+        alert('자동 연결 실패: ' + data.error);
+      }
+    } catch (error) {
+      console.error('Failed to auto-import:', error);
+      alert('자동 연결 중 오류가 발생했습니다.');
+    } finally {
+      setAutoImporting(false);
+    }
+  };
+
   const platformNames: Record<string, string> = {
     openai: 'OpenAI',
     gemini: 'Google Gemini',
@@ -135,13 +159,26 @@ export default function SettingsPage() {
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        <div className="mb-6">
+        <div className="mb-6 flex gap-3">
           <button
             onClick={() => setShowAddForm(!showAddForm)}
             className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors font-semibold"
           >
             + 새 API 키 추가
           </button>
+          <button
+            onClick={handleAutoImport}
+            disabled={autoImporting}
+            className="px-6 py-3 bg-green-600 hover:bg-green-500 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg transition-colors font-semibold"
+          >
+            {autoImporting ? '연결 중...' : '⚡ 환경 변수에서 자동 연결'}
+          </button>
+          <Link
+            href="/setup"
+            className="px-6 py-3 bg-purple-600 hover:bg-purple-500 text-white rounded-lg transition-colors font-semibold"
+          >
+            🧙 설정 마법사
+          </Link>
         </div>
 
         {showAddForm && (
