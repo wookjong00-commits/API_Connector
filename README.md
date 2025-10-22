@@ -1,2 +1,137 @@
-# API_Connector
-API_Connector
+# AI Platform API Hub
+
+다양한 AI 플랫폼의 API를 통합 관리할 수 있는 웹 애플리케이션입니다.
+
+## 지원 플랫폼
+
+- **OpenAI**: GPT-4, GPT-3.5, DALL-E 3/2, Whisper
+- **Google Gemini**: Gemini Pro, Gemini Pro Vision
+- **Google Veo 3.1**: AI 비디오 생성 (최대 60초, 1080p)
+- **Kling AI**: 텍스트/이미지에서 비디오 생성
+- **Seedream 4.0**: ByteDance의 4K AI 이미지 생성
+
+## 주요 기능
+
+- API 키 안전 관리 (암호화 저장)
+- 통합 API 인터페이스
+- 실시간 API 테스트 플레이그라운드
+- 사용량 로그 및 추적
+- 응답 시간 모니터링
+
+## 기술 스택
+
+- **프레임워크**: Next.js 14 (App Router)
+- **언어**: TypeScript
+- **스타일링**: Tailwind CSS
+- **데이터베이스**: JSON 기반 파일 저장소
+- **AI SDK**:
+  - OpenAI SDK
+  - Google Generative AI SDK
+  - Axios (Kling, Seedream, Veo)
+
+## 시작하기
+
+### 1. 의존성 설치
+
+```bash
+npm install
+```
+
+### 2. 환경 변수 설정
+
+`.env` 파일을 생성하고 다음 내용을 추가하세요:
+
+```env
+DATABASE_URL="file:./dev.db"
+ENCRYPTION_KEY="your-secret-encryption-key-change-this-in-production"
+```
+
+### 3. 개발 서버 실행
+
+```bash
+npm run dev
+```
+
+브라우저에서 [http://localhost:3000](http://localhost:3000)을 열어 확인하세요.
+
+### 4. API 키 추가
+
+1. [http://localhost:3000/settings](http://localhost:3000/settings)로 이동
+2. 각 플랫폼의 API 키를 추가
+3. [http://localhost:3000/playground](http://localhost:3000/playground)에서 테스트
+
+## 프로젝트 구조
+
+```
+API_Connector/
+├── app/
+│   ├── api/
+│   │   ├── keys/          # API 키 관리 엔드포인트
+│   │   └── platforms/     # 각 플랫폼별 API 엔드포인트
+│   ├── settings/          # API 키 관리 페이지
+│   ├── playground/        # API 테스트 인터페이스
+│   ├── layout.tsx
+│   └── page.tsx
+├── lib/
+│   ├── db.ts             # JSON 데이터베이스 유틸리티
+│   └── platforms/        # 각 플랫폼별 클라이언트
+│       ├── openai.ts
+│       ├── gemini.ts
+│       ├── veo.ts
+│       ├── kling.ts
+│       └── seedream.ts
+├── data/
+│   └── db.json           # API 키 및 로그 저장소
+└── prisma/
+    └── schema.prisma     # 데이터베이스 스키마 (향후 마이그레이션용)
+```
+
+## API 엔드포인트
+
+### API 키 관리
+
+- `GET /api/keys` - 모든 API 키 조회
+- `POST /api/keys` - 새 API 키 추가
+- `PATCH /api/keys` - API 키 업데이트
+- `DELETE /api/keys?id={id}` - API 키 삭제
+
+### 플랫폼 호출
+
+- `POST /api/platforms/openai` - OpenAI API 호출
+- `POST /api/platforms/gemini` - Google Gemini API 호출
+- `POST /api/platforms/veo` - Google Veo API 호출
+- `POST /api/platforms/kling` - Kling AI API 호출
+- `POST /api/platforms/seedream` - Seedream API 호출
+
+## 보안
+
+- API 키는 AES-256-CBC 암호화로 저장됩니다
+- 암호화 키는 환경 변수로 관리됩니다
+- 프로덕션 환경에서는 강력한 암호화 키를 사용하세요
+
+## API 키 발급 방법
+
+### OpenAI
+[https://platform.openai.com/api-keys](https://platform.openai.com/api-keys)
+
+### Google Gemini
+[https://makersuite.google.com/app/apikey](https://makersuite.google.com/app/apikey)
+
+### Google Veo 3.1
+Google Gemini API를 통해 접근 (동일한 API 키 사용)
+
+### Kling AI
+- 공식: [https://app.klingai.com/](https://app.klingai.com/)
+- 서드파티: PiAPI, UseAPI 등
+
+### Seedream 4.0
+- BytePlus: [https://console.byteplus.com/](https://console.byteplus.com/)
+- 서드파티: Kie.ai, CometAPI 등
+
+## 라이선스
+
+MIT
+
+## 기여
+
+이슈 및 풀 리퀘스트를 환영합니다!
