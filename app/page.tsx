@@ -74,16 +74,22 @@ export default function Home() {
             <h2 className="text-2xl font-bold text-white mb-4">빠른 링크</h2>
             <div className="space-y-3">
               <a
+                href="/setup"
+                className="block px-4 py-3 bg-purple-600 hover:bg-purple-500 text-white rounded-lg transition-colors text-center font-semibold"
+              >
+                🧙 초기 설정 마법사
+              </a>
+              <a
                 href="/settings"
                 className="block px-4 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors text-center font-semibold"
               >
-                API 키 관리
+                ⚙️ API 키 관리
               </a>
               <a
                 href="/playground"
                 className="block px-4 py-3 bg-green-600 hover:bg-green-500 text-white rounded-lg transition-colors text-center font-semibold"
               >
-                API Playground
+                🎮 API Playground
               </a>
             </div>
           </div>

@@ -56,6 +56,22 @@ npm run dev
 
 ### 4. API 키 추가
 
+**방법 1: 자동 연결 (권장)**
+
+1. `.env` 파일에 API 키를 입력:
+   ```env
+   OPENAI_API_KEY=sk-...
+   GOOGLE_API_KEY=AI...
+   KLING_API_KEY=...
+   SEEDREAM_API_KEY=...
+   AUTO_IMPORT_API_KEYS=true
+   ```
+
+2. [http://localhost:3000/setup](http://localhost:3000/setup)로 이동하여 "자동 연결 시작" 클릭
+3. 또는 설정 페이지에서 "⚡ 환경 변수에서 자동 연결" 버튼 클릭
+
+**방법 2: 수동 입력**
+
 1. [http://localhost:3000/settings](http://localhost:3000/settings)로 이동
 2. 각 플랫폼의 API 키를 추가
 3. [http://localhost:3000/playground](http://localhost:3000/playground)에서 테스트
@@ -86,6 +102,13 @@ API_Connector/
     └── schema.prisma     # 데이터베이스 스키마 (향후 마이그레이션용)
 ```
 
+## 주요 페이지
+
+- **홈 (`/`)**: 지원 플랫폼 개요 및 빠른 링크
+- **초기 설정 마법사 (`/setup`)**: 환경 변수에서 API 키 자동 연결
+- **API 키 관리 (`/settings`)**: API 키 수동 추가/수정/삭제
+- **Playground (`/playground`)**: 실시간 API 테스트 인터페이스
+
 ## API 엔드포인트
 
 ### API 키 관리
@@ -94,6 +117,12 @@ API_Connector/
 - `POST /api/keys` - 새 API 키 추가
 - `PATCH /api/keys` - API 키 업데이트
 - `DELETE /api/keys?id={id}` - API 키 삭제
+
+### 자동 연결
+
+- `GET /api/auto-import` - 환경 변수에서 API 키 자동 가져오기
+- `POST /api/auto-import` - JSON 데이터로 일괄 가져오기
+- `GET /api/connection-status` - 플랫폼별 연결 상태 확인
 
 ### 플랫폼 호출
 
