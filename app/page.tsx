@@ -94,6 +94,44 @@ export default function Home() {
             </div>
           </div>
         </div>
+
+        <div className="mt-8 bg-gray-800/50 rounded-lg p-6 border border-gray-700">
+          <h2 className="text-2xl font-bold text-white mb-4">API 문서 및 개발자 리소스</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <a
+              href="https://platform.openai.com/docs/models/sora-2"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block px-4 py-3 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-500 hover:to-blue-500 text-white rounded-lg transition-colors text-center font-semibold"
+            >
+              🎬 Sora 2 API
+            </a>
+            <a
+              href="https://klingai.com/global/dev"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-lg transition-colors text-center font-semibold"
+            >
+              🎥 Kling API
+            </a>
+            <a
+              href="https://aistudio.google.com/app/api-keys"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block px-4 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white rounded-lg transition-colors text-center font-semibold"
+            >
+              ✨ Veo 3.1 Google API
+            </a>
+            <a
+              href="https://seed.bytedance.com/en/seedream4_0"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block px-4 py-3 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 text-white rounded-lg transition-colors text-center font-semibold"
+            >
+              🖼️ Seedream API
+            </a>
+          </div>
+        </div>
       </main>
     </div>
   );
