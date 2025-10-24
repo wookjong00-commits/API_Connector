@@ -3,7 +3,27 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 
-const DB_PATH = path.join(process.cwd(), 'data', 'db.json');
+// 서버리스 환경(Vercel, Lambda)에서는 /tmp만 쓰기 가능
+// 로컬 개발 시에는 ./data 디렉토리 사용
+function getDataDirectory(): string {
+  // 환경 변수로 데이터 디렉토리 지정 가능
+  if (process.env.DATA_DIR) {
+    return process.env.DATA_DIR;
+  }
+
+  // 프로덕션 환경 감지 (Vercel, AWS Lambda 등)
+  const isServerless = process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME;
+
+  if (isServerless) {
+    // 서버리스 환경: /tmp 디렉토리 사용 (유일하게 쓰기 가능)
+    return '/tmp/data';
+  }
+
+  // 로컬 개발 환경: 프로젝트 디렉토리의 data 폴더 사용
+  return path.join(process.cwd(), 'data');
+}
+
+const DB_PATH = path.join(getDataDirectory(), 'db.json');
 
 export interface ApiKey {
   id: string;
