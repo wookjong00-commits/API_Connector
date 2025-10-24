@@ -52,7 +52,26 @@ export class SeedreamClient {
     }
   }
 
+  // API 키를 다시 로드하는 메서드 (API 키가 추가/변경된 경우 사용)
+  private refreshApiKey() {
+    const apiKey = ApiKeyService.getActive('seedream');
+    if (!apiKey) {
+      this.apiKey = null;
+      return;
+    }
+
+    try {
+      this.apiKey = decryptApiKey(apiKey.encryptedKey);
+    } catch (error) {
+      console.error('Failed to refresh Seedream API key:', error);
+      this.apiKey = null;
+    }
+  }
+
   async generateImage(request: SeedreamImageRequest) {
+    // 매 요청마다 API 키를 다시 확인하여 최신 상태 유지
+    this.refreshApiKey();
+
     if (!this.apiKey) {
       throw new Error('Seedream client not initialized. Please add an API key.');
     }
@@ -139,6 +158,9 @@ export class SeedreamClient {
   }
 
   async upscaleImage(imageUrl: string, scaleFactor: number = 2) {
+    // 매 요청마다 API 키를 다시 확인하여 최신 상태 유지
+    this.refreshApiKey();
+
     if (!this.apiKey) {
       throw new Error('Seedream client not initialized. Please add an API key.');
     }
@@ -178,6 +200,8 @@ export class SeedreamClient {
   }
 
   isConfigured(): boolean {
+    // 최신 API 키 상태를 확인
+    this.refreshApiKey();
     return this.apiKey !== null;
   }
 }
