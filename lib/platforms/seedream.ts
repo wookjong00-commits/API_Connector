@@ -111,6 +111,15 @@ export class SeedreamClient {
       if (request.stream !== undefined) requestBody.stream = request.stream;
       if (request.metadata) requestBody.metadata = request.metadata;
 
+      // 디버깅: 요청 바디 로그 (이미지 데이터는 길이만 표시)
+      const debugBody = { ...requestBody };
+      if (debugBody.image_url && Array.isArray(debugBody.image_url)) {
+        debugBody.image_url = debugBody.image_url.map((url: string, i: number) =>
+          `[이미지 ${i + 1}: ${url.substring(0, 50)}... (길이: ${url.length})]`
+        );
+      }
+      console.log('🚀 Seedream API 요청:', JSON.stringify(debugBody, null, 2));
+
       const response = await axios.post(
         `${this.baseUrl}/images/generations`,
         requestBody,
@@ -145,8 +154,14 @@ export class SeedreamClient {
         } else {
           errorMessage = JSON.stringify(error.response.data);
         }
+        console.error('❌ Seedream API 에러:', {
+          status: error.response.status,
+          statusText: error.response.statusText,
+          data: error.response.data,
+        });
       } else if (error.message) {
         errorMessage = error.message;
+        console.error('❌ Seedream 요청 실패:', error.message);
       }
 
       return {

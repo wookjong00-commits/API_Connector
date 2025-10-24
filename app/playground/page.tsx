@@ -98,6 +98,8 @@ export default function PlaygroundPage() {
           // 참조 이미지가 있으면 추가
           if (seedreamReferenceImages.length > 0) {
             body.image_url = seedreamReferenceImages;
+            console.log(`📸 참조 이미지 ${seedreamReferenceImages.length}개 전송 중...`);
+            console.log('이미지 형식:', seedreamReferenceImages[0]?.substring(0, 50) + '...');
           }
           break;
 
@@ -396,6 +398,14 @@ export default function PlaygroundPage() {
                     )}
                   </div>
 
+                  {/* 에러 메시지 표시 */}
+                  {!result.success && result.error && (
+                    <div className="mb-4 p-3 bg-red-900/30 border border-red-700 rounded-lg">
+                      <p className="text-red-300 text-sm font-medium mb-1">오류 상세:</p>
+                      <p className="text-red-200 text-sm">{result.error}</p>
+                    </div>
+                  )}
+
                   {/* Seedream 이미지 결과 표시 */}
                   {selectedPlatform === 'seedream' && result.success && result.data?.data && (
                     <div className="mb-4">
@@ -404,7 +414,7 @@ export default function PlaygroundPage() {
                         {result.data.data.map((image: any, index: number) => (
                           <div key={index} className="bg-gray-900/50 rounded-lg overflow-hidden border border-gray-600">
                             <img
-                              src={image.url || image.b64_json ? `data:image/png;base64,${image.b64_json}` : ''}
+                              src={image.url || (image.b64_json ? `data:image/png;base64,${image.b64_json}` : '')}
                               alt={`생성된 이미지 ${index + 1}`}
                               className="w-full h-auto"
                             />
