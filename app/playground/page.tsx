@@ -25,10 +25,31 @@ export default function PlaygroundPage() {
   const [seedreamPrompt, setSeedreamPrompt] = useState('');
   const [seedreamWidth, setSeedreamWidth] = useState(1024);
   const [seedreamHeight, setSeedreamHeight] = useState(1024);
+  const [seedreamReferenceImages, setSeedreamReferenceImages] = useState<string[]>([]);
 
   // Veo
   const [veoPrompt, setVeoPrompt] = useState('');
   const [veoDuration, setVeoDuration] = useState(10);
+
+  // 이미지 파일을 base64로 변환하는 함수
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    Array.from(files).forEach((file) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        setSeedreamReferenceImages((prev) => [...prev, base64String]);
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  // 참조 이미지 제거 함수
+  const removeReferenceImage = (index: number) => {
+    setSeedreamReferenceImages((prev) => prev.filter((_, i) => i !== index));
+  };
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -74,6 +95,10 @@ export default function PlaygroundPage() {
             width: seedreamWidth,
             height: seedreamHeight,
           };
+          // 참조 이미지가 있으면 추가
+          if (seedreamReferenceImages.length > 0) {
+            body.image_url = seedreamReferenceImages;
+          }
           break;
 
         case 'veo':
@@ -280,6 +305,43 @@ export default function PlaygroundPage() {
                       />
                     </div>
                   </div>
+
+                  {/* 참조 이미지 업로드 */}
+                  <div>
+                    <label className="block text-gray-300 mb-2">참조 이미지 (선택사항)</label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleImageUpload}
+                      className="w-full px-4 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-600 file:text-white hover:file:bg-blue-500 file:cursor-pointer"
+                    />
+                    <p className="text-gray-500 text-sm mt-1">업로드한 이미지를 참조하여 새로운 이미지를 생성합니다</p>
+                  </div>
+
+                  {/* 참조 이미지 미리보기 */}
+                  {seedreamReferenceImages.length > 0 && (
+                    <div>
+                      <label className="block text-gray-300 mb-2">참조 이미지 ({seedreamReferenceImages.length}개)</label>
+                      <div className="grid grid-cols-3 gap-2">
+                        {seedreamReferenceImages.map((img, index) => (
+                          <div key={index} className="relative group">
+                            <img
+                              src={img}
+                              alt={`참조 이미지 ${index + 1}`}
+                              className="w-full h-24 object-cover rounded-lg border border-gray-600"
+                            />
+                            <button
+                              onClick={() => removeReferenceImage(index)}
+                              className="absolute top-1 right-1 bg-red-600 hover:bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -323,7 +385,7 @@ export default function PlaygroundPage() {
               <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
                 <h2 className="text-xl font-semibold text-white mb-4">결과</h2>
                 <div className={`p-4 rounded-lg ${result.success ? 'bg-green-900/20' : 'bg-red-900/20'}`}>
-                  <div className="flex items-center gap-2 mb-2">
+                  <div className="flex items-center gap-2 mb-4">
                     <span className={`text-sm font-semibold ${result.success ? 'text-green-400' : 'text-red-400'}`}>
                       {result.success ? '성공' : '실패'}
                     </span>
@@ -333,9 +395,44 @@ export default function PlaygroundPage() {
                       </span>
                     )}
                   </div>
-                  <pre className="text-gray-300 text-sm overflow-x-auto">
-                    {JSON.stringify(result, null, 2)}
-                  </pre>
+
+                  {/* Seedream 이미지 결과 표시 */}
+                  {selectedPlatform === 'seedream' && result.success && result.data?.data && (
+                    <div className="mb-4">
+                      <h3 className="text-white font-semibold mb-3">생성된 이미지</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {result.data.data.map((image: any, index: number) => (
+                          <div key={index} className="bg-gray-900/50 rounded-lg overflow-hidden border border-gray-600">
+                            <img
+                              src={image.url || image.b64_json ? `data:image/png;base64,${image.b64_json}` : ''}
+                              alt={`생성된 이미지 ${index + 1}`}
+                              className="w-full h-auto"
+                            />
+                            <div className="p-3 flex justify-between items-center">
+                              <span className="text-gray-400 text-sm">이미지 {index + 1}</span>
+                              <a
+                                href={image.url || `data:image/png;base64,${image.b64_json}`}
+                                download={`seedream-${Date.now()}-${index + 1}.png`}
+                                className="px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white text-sm rounded transition-colors"
+                              >
+                                다운로드
+                              </a>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* JSON 응답 (접을 수 있는 형태) */}
+                  <details className="mt-4">
+                    <summary className="cursor-pointer text-gray-400 text-sm hover:text-gray-300 mb-2">
+                      전체 응답 보기 (JSON)
+                    </summary>
+                    <pre className="text-gray-300 text-sm overflow-x-auto bg-gray-900/50 p-4 rounded">
+                      {JSON.stringify(result, null, 2)}
+                    </pre>
+                  </details>
                 </div>
               </div>
             )}
