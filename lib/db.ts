@@ -58,7 +58,7 @@ interface Database {
 
 // 데이터베이스 초기화
 function initDb(): Database {
-  const dataDir = path.join(process.cwd(), 'data');
+  const dataDir = getDataDirectory();
   if (!fs.existsSync(dataDir)) {
     fs.mkdirSync(dataDir, { recursive: true });
   }
