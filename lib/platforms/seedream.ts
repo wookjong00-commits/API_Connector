@@ -10,6 +10,7 @@ export interface SeedreamImageRequest {
   mask?: string;
   width?: number;
   height?: number;
+  size?: string; // 2K, 4K 등
   aspect_ratio?: string;
   num_images?: number;
   guidance_scale?: number;
@@ -32,7 +33,7 @@ export interface SeedreamImageRequest {
 
 export class SeedreamClient {
   private apiKey: string | null = null;
-  private baseUrl: string = 'https://api.kie.ai/v1'; // Kie.ai 사용 예시
+  private baseUrl: string = 'https://ark.ap-southeast.bytepluses.com/api/v3';
 
   constructor() {
     this.initClient();
@@ -61,7 +62,7 @@ export class SeedreamClient {
     try {
       // Seedream API 요청 바디 구성
       const requestBody: any = {
-        model: request.model || 'seedream-4.0', // 필수 파라미터
+        model: request.model || 'seedream-4-0-250828', // 필수 파라미터
         prompt: request.prompt, // 필수 파라미터
       };
 
@@ -69,6 +70,7 @@ export class SeedreamClient {
       if (request.negative_prompt) requestBody.negative_prompt = request.negative_prompt;
       if (request.image_url) requestBody.image_url = request.image_url;
       if (request.mask) requestBody.mask = request.mask;
+      if (request.size) requestBody.size = request.size;
       if (request.width) requestBody.width = request.width;
       if (request.height) requestBody.height = request.height;
       if (request.aspect_ratio) requestBody.aspect_ratio = request.aspect_ratio;
